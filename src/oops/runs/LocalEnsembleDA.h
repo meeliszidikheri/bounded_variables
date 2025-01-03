@@ -205,7 +205,6 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
     // Setup observations
     const eckit::mpi::Comm & time = oops::mpi::myself();
     ObsSpaces_ obsdb(obsConfig, this->getComm(), timeWindow, time);
-    Observations_ yobs(obsdb, "ObsValue");
 
     // Read all ensemble members and compute the ensemble mean
     StateEnsemble4D_ ens_xx(geometry, params.background);
@@ -242,6 +241,7 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
     util::printRunStats("LocalEnsembleDA before computeHofX");
 
     // compute H(x)
+    Observations_ yobs(obsdb, "ObsValue");
     Observations_ yb_mean = solver->computeHofX(ens_xx, 0, params.driver.value().readHofX);
     if (do_test_prints) {
        Log::test() << "H(x) ensemble background mean: " << std::endl << yb_mean << std::endl;
