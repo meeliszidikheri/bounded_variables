@@ -154,8 +154,8 @@ int ObsSpaceQG::nobs() const {
 }
 // -----------------------------------------------------------------------------
 
-void ObsSpaceQG::append(const std::string & appendDir) {
-  throw eckit::NotImplemented("ObsSpaceQG::append() is not implemented.", Here());
+void ObsSpaceQG::updateObsSpace(const eckit::Configuration & appendConfig) {
+  throw eckit::NotImplemented("ObsSpaceQG::updateObsSpace() is not implemented.", Here());
 }
 
 // -----------------------------------------------------------------------------

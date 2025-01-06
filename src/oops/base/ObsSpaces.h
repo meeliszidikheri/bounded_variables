@@ -50,7 +50,7 @@ class ObsSpaces : public util::Printable,
   void save() const;
 
 /// Append new obs
-  void appendObs(const eckit::Configuration & appendConfig);
+  void updateObsSpaces(const eckit::Configuration &);
 
 /// Access
   std::size_t size() const {return spaces_.size();}
@@ -65,7 +65,7 @@ const util::DateTime windowEnd() const {return timeWindow_.end();}
   void print(std::ostream &) const;
 
   std::vector<std::shared_ptr<ObsSpace_> > spaces_;
-  const util::TimeWindow timeWindow_;
+  util::TimeWindow timeWindow_;
 };
 
 // -----------------------------------------------------------------------------
@@ -112,11 +112,14 @@ void ObsSpaces<OBS>::print(std::ostream & os) const {
 }
 
 template<typename OBS>
-void ObsSpaces<OBS>::appendObs(const eckit::Configuration & appendConfig) {
+void ObsSpaces<OBS>::updateObsSpaces(const eckit::Configuration & cdaConfig) {
   Log::trace() << "ObsSpaces::appendObs start" << std::endl;
-  std::string appendDir = appendConfig.getString("obs append directory");
+  if (cdaConfig.has("time window")) {
+      util::TimeWindow newWindow(cdaConfig.getSubConfiguration("time window"));
+      timeWindow_ = newWindow;
+  }
   for (std::size_t jj = 0; jj < spaces_.size(); ++jj) {
-    spaces_[jj]->append(appendDir);
+    spaces_[jj]->updateObsSpace(cdaConfig);
   }
   Log::trace() << "ObsSpaces::appendObs done" << std::endl;
 }

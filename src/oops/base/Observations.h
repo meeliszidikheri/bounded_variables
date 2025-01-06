@@ -61,6 +61,7 @@ template <typename OBS> class Observations : public util::Printable {
 /// Save/read observations values
   void save(const std::string &) const;
   void read(const std::string &);
+  void readAppended(const std::string &);
 
 /// Accumulator
   void zero();
@@ -193,6 +194,14 @@ void Observations<OBS>::perturb(const ObsErrors_ & Rmat) {
 template <typename OBS>
 void Observations<OBS>::print(std::ostream & os) const {
   for (std::size_t jj = 0; jj < obs_.size(); ++jj) os << obs_[jj] << std::endl;
+}
+// -----------------------------------------------------------------------------
+template <typename OBS>
+void Observations<OBS>::readAppended(const std::string & name) {
+  for (std::size_t jj = 0; jj < obsdb_.size(); ++jj) {
+    obs_[jj].readAppended(name);
+  }
+  Log::trace() << "Observations::applyContDaUpdate, Observations appended" << std::endl;
 }
 // -----------------------------------------------------------------------------
 }  // namespace oops

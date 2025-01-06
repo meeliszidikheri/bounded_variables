@@ -94,6 +94,8 @@ class Observers {
   void resetObsPert(const Geometry_ &, std::vector<std::unique_ptr<ObsOperatorBase_>>,
                     const std::shared_ptr<GetValueTLADs_> &, const Variables &);
 
+  void updateObservers(const eckit::Configuration &);
+
  private:
   static std::vector<ObserverParameters_> convertToParameters(const eckit::Configuration &config);
   static GetValuesParameters_ extractGetValuesParameters(const eckit::Configuration &config);
@@ -242,6 +244,18 @@ GetValuesParameters<MODEL> Observers<MODEL, OBS>::extractGetValuesParameters(
   oops::Log::trace() << "Observers<MODEL, OBS>::extractGetValuesParameters done" << std::endl;
   return parameters;
 }
+
+// -----------------------------------------------------------------------------
+
+template <typename MODEL, typename OBS>
+void Observers<MODEL, OBS>::updateObservers(const eckit::Configuration & cdaConfig) {
+  for (size_t jj = 0; jj < observers_.size(); ++jj) {
+    observers_[jj]->updateObserver(cdaConfig);
+  }
+  Log::trace() << "Observers obs error appended" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
 
 }  // namespace oops
 

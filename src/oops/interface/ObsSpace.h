@@ -77,7 +77,7 @@ class ObsSpace : public util::Printable,
   void save() const;
 
 // Append new obs
-  void append(const std::string & appendDir);
+  void updateObsSpace(const eckit::Configuration & appendConfig);
 
  private:
   void print(std::ostream &) const;
@@ -125,10 +125,10 @@ void ObsSpace<OBS>::save() const {
 // -----------------------------------------------------------------------------
 
 template <typename OBS>
-void ObsSpace<OBS>::append(const std::string & appendDir) {
+void ObsSpace<OBS>::updateObsSpace(const eckit::Configuration & appendConfig) {
   Log::trace() << "ObsSpace<OBS>::append starting" << std::endl;
   util::Timer timer(classname(), "append");
-  obsdb_->append(appendDir);
+  obsdb_->updateObsSpace(appendConfig);
   Log::trace() << "ObsSpace<OBS>::append done" << std::endl;
 }
 

@@ -175,4 +175,12 @@ size_t ObsVecQG::size() const {
   return nobs;
 }
 // -----------------------------------------------------------------------------
+void ObsVecQG::readAppended(const std::string & name) {
+  throw eckit::NotImplemented("ObsVecQG::readAppended() is not implemented.", Here());
+}
+// -----------------------------------------------------------------------------
+void ObsVecQG::zeroAppended() {
+  throw eckit::NotImplemented("ObsVecQG::zeroAppended() is not implemented.", Here());
+}
+// -----------------------------------------------------------------------------
 }  // namespace qg

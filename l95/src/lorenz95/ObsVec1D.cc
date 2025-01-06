@@ -225,4 +225,12 @@ void ObsVec1D::print(std::ostream & os) const {
   }
 }
 // -----------------------------------------------------------------------------
+void ObsVec1D::readAppended(const std::string & name) {
+  throw eckit::NotImplemented("ObsVec1D::readAppended() is not implemented.", Here());
+}
+// -----------------------------------------------------------------------------
+void ObsVec1D::zeroAppended() {
+  throw eckit::NotImplemented("ObsVec1D::zeroAppended() is not implemented.", Here());
+}
+// -----------------------------------------------------------------------------
 }  // namespace lorenz95

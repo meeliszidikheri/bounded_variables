@@ -119,7 +119,7 @@ template<typename MODEL, typename OBS> class CostJo : public CostTermBase<MODEL,
   void resetLinearization() override;
 
   /// Append new observations
-  void appendObs(const eckit::Configuration & appendConfig);
+  void applyContDaUpdate(const eckit::Configuration & cdaConfig) override;
 
   /// Accessors
   const ObsSpaces_ & obspaces() const {return obspaces_;}
@@ -430,34 +430,23 @@ void CostJo<MODEL, OBS>::resetLinearization() {
 // -----------------------------------------------------------------------------
 
 template<typename MODEL, typename OBS>
-void CostJo<MODEL, OBS>::appendObs(const eckit::Configuration & appendConfig) {
-  Log::trace() << "CostJo::appendObs start" << std::endl;
-
+void CostJo<MODEL, OBS>::applyContDaUpdate(const eckit::Configuration & cdaConfig) {
+  Log::trace() << "CostJo::applyContDaUpdate start" << std::endl;
   if (conf_.getBool("obs perturbations", false)) {
     throw eckit::NotImplemented("CostJo: appending to perturbed obs not implemented yet", Here());
   }
 
   if (!yobs_) {
-    ABORT("CostJo::appendObs: Should not append obs in the first outer loop.");
+    ABORT("CostJo::applyContDaUpdate: Should not append obs in the first outer loop.");
+  }
+  obspaces_.updateObsSpaces(cdaConfig);
+  yobs_->readAppended("ObsValue");
+  observers_->updateObservers(cdaConfig);
+    for (size_t jj = 0; jj < obspaces_.size(); ++jj) {
+    qcflags_[jj].zeroAppended();
   }
 
-  observers_.reset();
-  Rmat_.reset();
-  qcflags_.clear();
-  gradFG_.reset();
-  yobs_.reset();
-
-  obspaces_.appendObs(appendConfig);
-
-  yobs_.reset(new Observations_(obspaces_, "ObsValue"));
-  observers_.reset(new Observers_(obspaces_, conf_));
-  Rmat_.reset(new ObsErrors_(eckit::LocalConfiguration(conf_, "observers"), obspaces_));
-  for (size_t jj = 0; jj < obspaces_.size(); ++jj) {
-    ObsDataInt_ qcflags(obspaces_[jj], obspaces_[jj].obsvariables());
-    qcflags_.push_back(qcflags);
-  }
-
-  Log::trace() << "CostJo::appendObs done" << std::endl;
+  Log::trace() << "CostJo::applyContDaUpdate done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

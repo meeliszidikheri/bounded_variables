@@ -98,6 +98,8 @@ class ObsVector : public util::Printable,
   void save(const std::string &) const;
   /// Fill ObsVector with data with group \p name from the associated ObsSpace
   void read(const std::string &);
+  /// Append new data to with group \p name ObsVector from the associated ObsSpace
+  void readAppended(const std::string &);
 
   /// Number of non-masked out observations (across all MPI tasks)
   unsigned int nobs() const;
@@ -352,6 +354,16 @@ void ObsVector<OBS>::read(const std::string & name) {
   data_->read(name);
 
   Log::trace() << "ObsVector<OBS>::read done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+template <typename OBS>
+void ObsVector<OBS>::readAppended(const std::string & name) {
+  Log::trace() << "ObsVector<OBS>::readAppended starting " << name << std::endl;
+  util::Timer timer(classname(), "readAppended");
+
+  data_->readAppended(name);
+
+  Log::trace() << "ObsVector<OBS>::readAppended done" << std::endl;
 }
 // -----------------------------------------------------------------------------
 
