@@ -33,11 +33,9 @@ template <typename MODEL> class IncrementParameters : public Parameters {
   OOPS_CONCRETE_PARAMETERS(IncrementParameters, Parameters);
 
  public:
-  typedef typename Increment<MODEL>::ReadParameters_  ReadParameters_;
-
   RequiredParameter<util::DateTime> date{"date", this};
   RequiredParameter<oops::Variables> inputVariables{"input variables", this};
-  RequiredParameter<ReadParameters_> input{"input", this};
+  RequiredParameter<eckit::LocalConfiguration> input{"input", this};
   RequiredParameter<eckit::LocalConfiguration> output{"output", this};
   RequiredParameter<eckit::LocalConfiguration> trajectory{"trajectory", this};
 };
@@ -61,8 +59,6 @@ template <typename MODEL> class ConvertIncrementParameters : public ApplicationP
   OOPS_CONCRETE_PARAMETERS(ConvertIncrementParameters, ApplicationParameters);
 
  public:
-  typedef IncrementParameters<MODEL>            IncrementParameters_;
-
   /// Input geometry parameters.
   RequiredParameter<eckit::LocalConfiguration> inputGeometry{"input geometry", this};
 
@@ -74,7 +70,7 @@ template <typename MODEL> class ConvertIncrementParameters : public ApplicationP
                                                                       this};
 
   /// List of increments.
-  RequiredParameter<std::vector<IncrementParameters_>> increments{"increments", this};
+  RequiredParameter<std::vector<eckit::LocalConfiguration>> increments{"increments", this};
 };
 
 // -----------------------------------------------------------------------------
@@ -84,9 +80,6 @@ template <typename MODEL> class ConvertIncrement : public Application {
   typedef Increment<MODEL>                   Increment_;
   typedef State<MODEL>                       State_;
   typedef LinearVariableChange<MODEL>        LinearVariableChange_;
-
-  typedef typename Increment<MODEL>::ReadParameters_  ReadParameters_;
-  typedef IncrementParameters<MODEL>                  IncrementParameters_;
 
   typedef ConvertIncrementParameters<MODEL>  ConvertIncrementParameters_;
 
@@ -116,7 +109,7 @@ template <typename MODEL> class ConvertIncrement : public Application {
     }
 
 //  List of input and output increments
-    const std::vector<IncrementParameters_>& incrementParams = params.increments;
+    const std::vector<eckit::LocalConfiguration>& incrementParams = params.increments;
     const int nincrements = incrementParams.size();
 
 //  Loop over increments
@@ -125,13 +118,13 @@ template <typename MODEL> class ConvertIncrement : public Application {
       Log::info() << "Converting increment " << jm+1 << " of " << nincrements << std::endl;
 
 //    Datetime for increment
-      const util::DateTime incdatetime = incrementParams[jm].date;
+      const util::DateTime incdatetime(incrementParams[jm].getString("date"));
 
 //    Variables for input increment
-      const Variables incvars = incrementParams[jm].inputVariables;
+      const Variables incvars(incrementParams[jm], "input variables");
 
 //    Read input
-      const ReadParameters_ inputParams = incrementParams[jm].input;
+      const eckit::LocalConfiguration inputParams(incrementParams[jm], "input");
       Increment_ dxi(resol1, incvars, incdatetime);
       dxi.read(inputParams);
       Log::test() << "Input increment: " << dxi << std::endl;
@@ -141,7 +134,8 @@ template <typename MODEL> class ConvertIncrement : public Application {
 
 //    Variable transform
       if (lvcDefined) {
-        State_ xTrajBg(resol1, incrementParams[jm].trajectory);
+        const eckit::LocalConfiguration trajConf(incrementParams[jm], "trajectory");
+        State_ xTrajBg(resol1, trajConf);
         ASSERT(xTrajBg.validTime() == dx.validTime());  // Check time is consistent
         Log::test() << "Trajectory state: " << xTrajBg << std::endl;
 
@@ -157,7 +151,7 @@ template <typename MODEL> class ConvertIncrement : public Application {
       }
 
 //    Write state
-      const eckit::LocalConfiguration outputParams = incrementParams[jm].output;
+      const eckit::LocalConfiguration outputParams(incrementParams[jm], "output");
       dx.write(outputParams);
 
       Log::test() << "Output increment: " << dx << std::endl;

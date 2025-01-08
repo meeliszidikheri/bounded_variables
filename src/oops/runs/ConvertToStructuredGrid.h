@@ -55,12 +55,10 @@ template <typename MODEL> class IncToStructuredGridParameters : public Applicati
   typedef Geometry<MODEL>                Geometry_;
 
  public:
-  typedef typename Increment_::ReadParameters_      IncrementParameters_;
-
   RequiredParameter<eckit::LocalConfiguration>  incGeometry{"increment geometry", this};
   RequiredParameter<Variables>                  vars{"variables", this};
   RequiredParameter<util::DateTime>             date{"date", this};
-  RequiredParameter<IncrementParameters_>       increment{"increment", this};
+  RequiredParameter<eckit::LocalConfiguration>  increment{"increment", this};
   RequiredParameter<eckit::LocalConfiguration>  structuredGridInterp
                    {"structured grid interpolation", this};
 };

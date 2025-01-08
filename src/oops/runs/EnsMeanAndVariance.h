@@ -39,7 +39,6 @@ class EnsMeanAndVarianceParameters : public ApplicationParameters {
   OOPS_CONCRETE_PARAMETERS(EnsMeanAndVarianceParameters, ApplicationParameters)
 
  public:
-  typedef typename Increment<MODEL>::WriteParameters_     IncrementWriteParameters_;
   typedef StateEnsembleParameters<MODEL>                  StateEnsembleParameters_;
 
   /// Geometry parameters.
@@ -49,11 +48,11 @@ class EnsMeanAndVarianceParameters : public ApplicationParameters {
   RequiredParameter<StateEnsembleParameters_> ensembleConfig{"ensemble", this};
 
   /// Output increment parameters for variance.
-  OptionalParameter<IncrementWriteParameters_> outputStdDevConfig{"standard deviation output",
+  OptionalParameter<eckit::LocalConfiguration> outputStdDevConfig{"standard deviation output",
                                                  this};
   OptionalParameter<eckit::LocalConfiguration> outputStdDevConfigLL
                   {"standard deviation to structured grid", this};
-  OptionalParameter<IncrementWriteParameters_> outputVarConfig{"variance output", this};
+  OptionalParameter<eckit::LocalConfiguration> outputVarConfig{"variance output", this};
   OptionalParameter<eckit::LocalConfiguration> outputVarConfigLL
                   {"ensvariance to structured grid", this};
 

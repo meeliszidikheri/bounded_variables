@@ -29,6 +29,7 @@
 #include "oops/interface/State.h"
 #include "oops/mpi/mpi.h"
 #include "oops/runs/Application.h"
+#include "oops/util/ConfigHelpers.h"
 #include "oops/util/Logger.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
@@ -41,8 +42,6 @@ template <typename MODEL> class SqrtOfVertLocParameters : public ApplicationPara
   OOPS_CONCRETE_PARAMETERS(SqrtOfVertLocParameters, ApplicationParameters)
 
  public:
-  typedef typename Increment<MODEL>::WriteParameters_  WriteParameters_;
-
   Parameter<double> truncationTolerance{"truncation tolerance", 1.0, this};
 
   RequiredParameter<eckit::LocalConfiguration> geometry{"geometry", "geometry parameters", this};
@@ -59,7 +58,7 @@ template <typename MODEL> class SqrtOfVertLocParameters : public ApplicationPara
   OptionalParameter<size_t> maxNeigOutput{"max neig output",
         "maximum number of eigenvectors to output", this};
 
-  RequiredParameter<WriteParameters_> output{"output",
+  RequiredParameter<eckit::LocalConfiguration> output{"output",
         "where to write the output", this};
   Parameter<bool> printTestEachMember{"print test for each member", true, this};
 };
@@ -77,7 +76,6 @@ template <typename MODEL> class SqrtOfVertLoc : public Application {
   typedef Increment4D<MODEL>         Increment4D_;
   typedef IncrementEnsemble<MODEL>   IncrementEnsemble_;
   typedef State4D<MODEL>             State4D_;
-  typedef typename Increment_::WriteParameters_ WriteParameters_;
   typedef ModelSpaceCovarianceBase<MODEL>   ModelSpaceCovariance_;
   typedef SqrtOfVertLocParameters<MODEL>    Parameters_;
 
@@ -143,8 +141,8 @@ template <typename MODEL> class SqrtOfVertLoc : public Application {
 
 //  Output columns of sqrt(B)
     for (size_t jm = 0; jm < truncatedNeig; ++jm) {
-      WriteParameters_ outParams = params.output;
-      outParams.setMember(jm + 1);
+      eckit::LocalConfiguration outParams = params.output;
+      util::setMember(outParams, jm + 1);
       perts[jm].schur_product_with(sumOfSquares);  //  Scale eigen vectors
       perts[jm].write(outParams);
       if (params.printTestEachMember) {

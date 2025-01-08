@@ -21,6 +21,7 @@
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/Parameter.h"
 
 namespace oops {
 

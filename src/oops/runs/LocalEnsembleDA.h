@@ -31,6 +31,7 @@
 #include "oops/interface/GeometryIterator.h"
 #include "oops/mpi/mpi.h"
 #include "oops/runs/Application.h"
+#include "oops/util/ConfigHelpers.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
 #include "oops/util/Logger.h"
@@ -96,8 +97,6 @@ class LocalEnsembleDAParameters : public ApplicationParameters {
   typedef Increment<MODEL> Increment_;
 
  public:
-  typedef typename Increment_::WriteParameters_ IncrementWriteParameters_;
-
   /// Options describing the assimilation time window.
   RequiredParameter<eckit::LocalConfiguration> timeWindow{"time window", this};
 
@@ -135,19 +134,19 @@ class LocalEnsembleDAParameters : public ApplicationParameters {
          "parameters for prior mean output", this};
 
   /// Note: these Parameters have to be present if driver.savePostMeanInc is true.
-  OptionalParameter<IncrementWriteParameters_> outputPostMeanInc{"output increment",
+  OptionalParameter<eckit::LocalConfiguration> outputPostMeanInc{"output increment",
          "parameters for posterior mean increment output", this};
 
   /// Note: these Parameters have to be present if driver.savePostEnsInc is true.
-  OptionalParameter<IncrementWriteParameters_> outputPostEnsInc{"output ensemble increments",
+  OptionalParameter<eckit::LocalConfiguration> outputPostEnsInc{"output ensemble increments",
          "parameters for posterior ensemble increments output", this};
 
   /// Note: these Parameters have to be present if driver.savePriorVar is true.
-  OptionalParameter<IncrementWriteParameters_> outputPriorVar{"output variance prior",
+  OptionalParameter<eckit::LocalConfiguration> outputPriorVar{"output variance prior",
          "parameters for prior variance output", this};
 
   /// Note: these Parameters have to be present if driver.savePostVar is true.
-  OptionalParameter<IncrementWriteParameters_> outputPostVar{"output variance posterior",
+  OptionalParameter<eckit::LocalConfiguration> outputPostVar{"output variance posterior",
          "parameters for posterior variance output", this};
 };
 
@@ -165,7 +164,6 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
   typedef Observations<OBS>                Observations_;
   typedef State4D<MODEL>                   State4D_;
   typedef StateEnsemble4D<MODEL>           StateEnsemble4D_;
-  typedef typename Increment<MODEL>::WriteParameters_ IncrementWriteParameters_;
   typedef LocalEnsembleDAParameters<MODEL> LocalEnsembleDAParameters_;
 
  public:
@@ -309,9 +307,9 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
           "`save posterior ensemble increment` is set to true, but `output ensemble increments` "
           "configuration not found.");
       }
-      IncrementWriteParameters_ output = *params.outputPostEnsInc.value();
+      eckit::LocalConfiguration output = *params.outputPostEnsInc.value();
       for (size_t jj = 0; jj < nens; ++jj) {
-        output.setMember(jj+1);
+        util::setMember(output, jj+1);
         for (size_t itime = 0; itime < ana_pert[0].size(); ++itime) {
           Increment_ ana_increment(ana_pert[jj][itime], true);
           ana_increment -= bkg_pert[jj][itime];
@@ -366,8 +364,8 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
         throw eckit::BadValue("`save posterior mean increment` is set to true, but "
                               "`output increment` configuration not found.");
       }
-      IncrementWriteParameters_ output = *params.outputPostMeanInc.value();
-      output.setMember(0);
+      eckit::LocalConfiguration output = *params.outputPostMeanInc.value();
+      util::setMember(output, 0);
       for (size_t itime = 0; itime < ana_mean.size(); ++itime) {
         Increment_ ana_increment(ana_pert[0][itime], false);
         ana_increment.diff(ana_mean[itime], bkg_mean[itime]);
@@ -384,8 +382,8 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
         throw eckit::BadValue("`save prior variance` is set to true, but `output variance prior` "
                               "configuration not found.");
       }
-      IncrementWriteParameters_ output = *params.outputPriorVar.value();
-      output.setMember(0);
+      eckit::LocalConfiguration output = *params.outputPriorVar.value();
+      util::setMember(output, 0);
       std::string strOut("Forecast variance :");
       saveVariance(output, bkg_pert, do_test_prints, strOut);
     }
@@ -396,8 +394,8 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
         throw eckit::BadValue("`save posterior variance` is set to true, but "
                               "`output variance posterior` configuration not found.");
       }
-      IncrementWriteParameters_ output = *params.outputPostVar.value();
-      output.setMember(0);
+      eckit::LocalConfiguration output = *params.outputPostVar.value();
+      util::setMember(output, 0);
       std::string strOut("Analysis variance :");
       saveVariance(output, ana_pert, do_test_prints, strOut);
     }
@@ -513,7 +511,7 @@ template <typename MODEL, typename OBS> class LocalEnsembleDA : public Applicati
     }
   }
 
-  void saveVariance(const IncrementWriteParameters_ & params, const IncrementEnsemble4D_ & perts,
+  void saveVariance(const eckit::LocalConfiguration & params, const IncrementEnsemble4D_ & perts,
                     const bool do_test_prints, const std::string & strOut) const {
     // save and optionaly print varaince of an IncrementEnsemble4D_ object
     size_t nens = perts.size();

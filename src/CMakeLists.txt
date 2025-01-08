@@ -185,8 +185,6 @@ oops/base/StructuredGridPostProcessor.h
 oops/base/StructuredGridWriter.h
 oops/base/TrajectorySaver.h
 oops/base/TrivialSamplingMethodSelector.h
-oops/base/WriteParametersBase.cc
-oops/base/WriteParametersBase.h
 oops/base/VariableChangeParametersBase.h
 oops/base/variables_f.cc
 oops/base/variables_f.h
@@ -456,8 +454,6 @@ oops/util/parameters/EmptyParameters.h
 oops/util/parameters/GenericParameters.h
 oops/util/parameters/HasDiracParameters_.h
 oops/util/parameters/HasParameters_.h
-oops/util/parameters/HasReadParameters_.h
-oops/util/parameters/HasWriteParameters_.h
 oops/util/parameters/IgnoreOtherParameters.cc
 oops/util/parameters/IgnoreOtherParameters.h
 oops/util/parameters/NumericConstraints.h
