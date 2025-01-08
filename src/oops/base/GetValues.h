@@ -350,7 +350,7 @@ void GetValues<MODEL, OBS>::initialize(const util::Duration & tstep) {
   }
   doLinearTimeInterpolation_ = useLinearTimeInterpolation_;
   // no need to do time interpolation if there is only one subwindow
-  if (tstep == timeWindow_.length()) doLinearTimeInterpolation_ = false;
+  if (tstep >= timeWindow_.length()) doLinearTimeInterpolation_ = false;
   hslot_ = doLinearTimeInterpolation_ ? tstep : tstep/2;
 
   Log::trace() << "GetValues::initialize done" << std::endl;
