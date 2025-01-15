@@ -34,6 +34,7 @@
 #include "oops/interface/ObsOperator.h"
 #include "oops/interface/ObsSpace.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/Parameters.h"
 #include "oops/util/parameters/RequiredParameter.h"

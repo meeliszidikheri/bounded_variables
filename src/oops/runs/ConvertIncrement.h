@@ -40,19 +40,6 @@ template <typename MODEL> class IncrementParameters : public Parameters {
   RequiredParameter<eckit::LocalConfiguration> trajectory{"trajectory", this};
 };
 
-/// Options controlling linear variable change
-template <typename MODEL> class LinearVarChangeParameters : public Parameters {
-  OOPS_CONCRETE_PARAMETERS(LinearVarChangeParameters, Parameters)
-  typedef typename LinearVariableChange<MODEL>::Parameters_ LinearVariableChangeParameters_;
-
- public:
-  // parameters for linear variable change.
-  LinearVariableChangeParameters_ linearVarChange{this};
-  Parameter<bool> doInverse{"do inverse",
-                     "apply inverse linear variable change instead of linear variable change",
-                     false, this};
-};
-
 
 /// Top-level options taken by the ConvertIncrement application.
 template <typename MODEL> class ConvertIncrementParameters : public ApplicationParameters {
@@ -66,8 +53,7 @@ template <typename MODEL> class ConvertIncrementParameters : public ApplicationP
   RequiredParameter<eckit::LocalConfiguration> outputGeometry{"output geometry", this};
 
   /// Linear variable change.
-  OptionalParameter<LinearVarChangeParameters<MODEL>> linearVarChange{"linear variable change",
-                                                                      this};
+  OptionalParameter<eckit::LocalConfiguration> linearVarChange{"linear variable change", this};
 
   /// List of increments.
   RequiredParameter<std::vector<eckit::LocalConfiguration>> increments{"increments", this};
@@ -103,7 +89,7 @@ template <typename MODEL> class ConvertIncrement : public Application {
     bool lvcDefined = false;
     auto linVarChangeParams = params.linearVarChange.value();
     if (linVarChangeParams != boost::none) {
-        if (linVarChangeParams->linearVarChange.outputVariables.value() != boost::none) {
+        if (linVarChangeParams.value().has("output variables")) {
             lvcDefined = true;
         }
     }
@@ -140,10 +126,10 @@ template <typename MODEL> class ConvertIncrement : public Application {
         Log::test() << "Trajectory state: " << xTrajBg << std::endl;
 
         // Create variable change
-        LinearVariableChange_ lvc(resol2, linVarChangeParams->linearVarChange);
-        auto & varout = *linVarChangeParams->linearVarChange.outputVariables.value();
+        LinearVariableChange_ lvc(resol2, linVarChangeParams.value());
+        Variables varout(linVarChangeParams.value(), "output variables");
         lvc.changeVarTraj(xTrajBg, varout);
-        if (linVarChangeParams->doInverse) {
+        if (linVarChangeParams.value().getBool("do inverse", false)) {
           lvc.changeVarInverseTL(dx, varout);
         } else {
           lvc.changeVarTL(dx, varout);

@@ -128,7 +128,6 @@ oops/base/InflationBase.h
 oops/base/instantiateCovarFactory.h
 oops/base/instantiateInflationFactory.h
 oops/base/LinearModel.h
-oops/base/LinearVariableChangeParametersBase.h
 oops/base/Localization.h
 oops/base/Model.h
 oops/base/ModelSpaceCovarianceBase.h
@@ -185,7 +184,6 @@ oops/base/StructuredGridPostProcessor.h
 oops/base/StructuredGridWriter.h
 oops/base/TrajectorySaver.h
 oops/base/TrivialSamplingMethodSelector.h
-oops/base/VariableChangeParametersBase.h
 oops/base/variables_f.cc
 oops/base/variables_f.h
 oops/base/variables_mod.F90

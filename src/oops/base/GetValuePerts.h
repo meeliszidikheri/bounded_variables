@@ -32,8 +32,7 @@ class GetValuePerts : public GetValuePosts<MODEL, OBS> {
   typedef GetValuePosts<MODEL, OBS>              GetValuePosts_;
   typedef GetValueTLADs<MODEL, OBS>              GetValueTLADs_;
   typedef Increment<MODEL>                       Increment_;
-  typedef VariableChange<MODEL>     VariableChange_;
-  typedef typename VariableChange_::Parameters_ VariableChangeParameters_;
+  typedef VariableChange<MODEL>                  VariableChange_;
   typedef std::shared_ptr<GetValues<MODEL, OBS>> GetValuePtr_;
 
  public:
