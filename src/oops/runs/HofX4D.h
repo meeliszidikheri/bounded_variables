@@ -121,13 +121,13 @@ template <typename MODEL, typename OBS> class HofX4D : public Application {
       qcflags.push_back(qc);
     }
     hofx.finalize(yobs, qcflags);
-    Log::info() << "H(x): " << std::endl << yobs << "End H(x)" << std::endl;
-    Log::test() << "H(x): " << std::endl << yobs << "End H(x)" << std::endl;
+    Log::info() << "H(x): " << yobs << std::endl << "End H(x)" << std::endl;
+    Log::test() << "H(x): " << yobs << std::endl << "End H(x)" << std::endl;
 
 //  Perturb H(x) if needed
     if (oConfig.getBool("obs perturbations", false)) {
       yobs.perturb(Rmat);
-      Log::test() << "Perturbed H(x): " << std::endl << yobs << "End Perturbed H(x)" << std::endl;
+      Log::test() << "Perturbed H(x): " << yobs << std::endl << "End Perturbed H(x)" << std::endl;
     }
 
 //  Save H(x) as observations (if "make obs" == true)

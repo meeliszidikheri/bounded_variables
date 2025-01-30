@@ -253,7 +253,7 @@ void Departures<OBS>::save(const std::string & name) const {
 template <typename OBS>
 void Departures<OBS>::print(std::ostream & os) const {
   for (size_t jj = 0; jj < dep_.size(); ++jj) {
-    os << dep_[jj] << std::endl;
+    os << std::endl << dep_[jj];
   }
 }
 // -----------------------------------------------------------------------------

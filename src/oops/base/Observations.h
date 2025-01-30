@@ -193,7 +193,7 @@ void Observations<OBS>::perturb(const ObsErrors_ & Rmat) {
 // -----------------------------------------------------------------------------
 template <typename OBS>
 void Observations<OBS>::print(std::ostream & os) const {
-  for (std::size_t jj = 0; jj < obs_.size(); ++jj) os << obs_[jj] << std::endl;
+  for (std::size_t jj = 0; jj < obs_.size(); ++jj) os << std::endl << obs_[jj];
 }
 // -----------------------------------------------------------------------------
 template <typename OBS>

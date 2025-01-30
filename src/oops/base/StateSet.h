@@ -23,7 +23,6 @@
 #include "oops/mpi/mpi.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
-#include "oops/util/Printable.h"
 
 namespace oops {
 
