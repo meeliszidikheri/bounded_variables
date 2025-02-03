@@ -27,6 +27,7 @@
 #include "oops/base/Variables.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
+#include "oops/util/Logger.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
@@ -93,6 +94,10 @@ class StateL95 : public util::Printable,
   size_t serialSize() const;
   void serialize(std::vector<double> &) const;
   void deserialize(const std::vector<double> &, size_t &);
+  void transpose(const StateL95 & FCState, const eckit::mpi::Comm & global,
+     const int ensNum, const int transNum) {
+     throw eckit::NotImplemented("StateL95::transpose not implemented", Here());
+  }
 
  private:
   void print(std::ostream &) const;

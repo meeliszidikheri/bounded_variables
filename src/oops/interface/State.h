@@ -63,6 +63,9 @@ class State : public util::Printable,
   /// Assignment operator
   State & operator =(const State &);
 
+  void transpose(const State_ &, const eckit::mpi::Comm &,
+       const int, const int);
+
   /// Accessor
   State_ & state() {if (fset_) {fset_->clear();} return *state_;}
   /// const accessor
@@ -167,7 +170,6 @@ State<MODEL>::State(const Variables & vars, const State & other)
   this->setObjectSize(state_->serialSize()*sizeof(double));
   Log::trace() << "State<MODEL>::State variables done" << std::endl;
 }
-
 // -----------------------------------------------------------------------------
 
 template<typename MODEL>
@@ -190,6 +192,19 @@ State<MODEL>::~State() {
   state_.reset();
   fset_.reset();
   Log::trace() << "State<MODEL>::~State done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+template<typename MODEL>
+void State<MODEL>::transpose(const State_ & DistState, const eckit::mpi::Comm & global,
+       const int ensNum, const int transNum) {
+  // The DistState has a distributed set of states. Transpose returns the local
+  // state from ensemble number ensNum on a smaller patch of geometry of the
+  // DAState or GlobalState
+  Log::trace() << "State<MODEL>::transpose interface starting" << std::endl;
+  state_->transpose(DistState, global, ensNum, transNum);
+  Log::trace() << "State<MODEL>::transpose interface done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

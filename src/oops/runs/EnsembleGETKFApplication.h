@@ -120,7 +120,7 @@ class EnsembleForecastApplication : public Application {
     const util::Duration tstep(model.getString("tstep"));
     const eckit::LocalConfiguration ic(memberConf, "initial condition");
     const util::DateTime bgndate(ic.getString("datetime"));
-    const util::Duration fclength(ic.getString("forecast length"));
+    const util::Duration fclength(model.getString("forecast length"));
     const util::DateTime enddate(bgndate + fclength);
     std::vector<util::DateTime> times;
 

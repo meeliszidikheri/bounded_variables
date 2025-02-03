@@ -19,8 +19,8 @@
 #include "oops/base/Geometry.h"
 #include "oops/base/Increment4D.h"
 #include "oops/base/LocalIncrement.h"
-#include "oops/base/State4D.h"
 #include "oops/base/StateEnsemble4D.h"
+#include "oops/base/StateSet.h"
 #include "oops/base/Variables.h"
 #include "oops/interface/GeometryIterator.h"
 #include "oops/util/DateTime.h"
@@ -34,7 +34,7 @@ namespace oops {
 template<typename MODEL> class IncrementEnsemble4D {
   typedef Geometry<MODEL>            Geometry_;
   typedef GeometryIterator<MODEL>    GeometryIterator_;
-  typedef State4D<MODEL>             State4D_;
+  typedef StateSet<MODEL>            StateSet_;
   typedef StateEnsemble4D<MODEL>     StateEnsemble4D_;
   typedef Increment4D<MODEL>         Increment4D_;
 
@@ -46,11 +46,12 @@ template<typename MODEL> class IncrementEnsemble4D {
                       const int rank);
   /// \brief construct ensemble of perturbations as \p ens - \p mean; holding
   //         \p vars variables
-  IncrementEnsemble4D(const StateEnsemble4D_ & ens, const State4D_ & mean,
+  IncrementEnsemble4D(const StateEnsemble4D_ & ens, const StateSet_ & mean,
                       const Variables & vars);
 
   /// Accessors
   size_t size() const {return ensemblePerturbs_.size();}
+
   Increment4D_ & operator[](const size_t ii) {return ensemblePerturbs_[ii];}
   const Increment4D_ & operator[](const size_t ii) const {return ensemblePerturbs_[ii];}
 
@@ -77,11 +78,10 @@ IncrementEnsemble4D<MODEL>::IncrementEnsemble4D(const Geometry_ & resol, const V
   Log::trace() << "IncrementEnsemble4D:contructor done" << std::endl;
 }
 
-// ====================================================================================
-
+// -----------------------------------------------------------------------------
 template<typename MODEL>
 IncrementEnsemble4D<MODEL>::IncrementEnsemble4D(const StateEnsemble4D_ & ensemble,
-                                                const State4D_ & mean, const Variables & vars)
+                                                const StateSet_ & mean, const Variables & vars)
   : ensemblePerturbs_()
 {
   ensemblePerturbs_.reserve(ensemble.size());

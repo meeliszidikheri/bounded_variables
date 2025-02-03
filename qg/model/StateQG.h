@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "oops/util/DateTime.h"
+#include "oops/util/Logger.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
@@ -78,6 +79,10 @@ class StateQG : public util::Printable,
   size_t serialSize() const;
   void serialize(std::vector<double> &) const;
   void deserialize(const std::vector<double> &, size_t &);
+  void transpose(const StateQG & FCState, const eckit::mpi::Comm & global,
+     const int ensNum, const int transNum) {
+     throw eckit::NotImplemented("StateQG::transpose not implemented", Here());
+  }
 
 /// ATLAS FieldSet
   void toFieldSet(atlas::FieldSet &) const;
