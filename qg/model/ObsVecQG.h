@@ -74,6 +74,9 @@ class ObsVecQG : public util::Printable,
   void save(const std::string &) const;
   void read(const std::string &);
 
+  std::string info(const std::string &) const;
+  std::string info(const std::string &, const ObsDataQG<int> &) const;
+
  private:
   void print(std::ostream &) const;
 

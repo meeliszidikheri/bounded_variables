@@ -76,6 +76,9 @@ class ObsVec1D : public util::Printable,
 
   const double & missing() const {return missing_;}
 
+  std::string info(const std::string &) const;
+  std::string info(const std::string &, const ObsData1D<int> &) const;
+
  private:
   void print(std::ostream &) const;
 

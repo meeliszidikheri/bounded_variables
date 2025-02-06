@@ -13,6 +13,7 @@
 
 #include <cstddef>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "oops/base/ObsErrors.h"
 #include "oops/base/ObsSpaces.h"
 #include "oops/base/ObsVector.h"
+#include "oops/interface/ObsDataVector.h"
 #include "oops/util/Logger.h"
 #include "oops/util/Printable.h"
 
@@ -37,6 +39,7 @@ template <typename OBS> class Observations : public util::Printable {
   typedef ObsErrors<OBS>           ObsErrors_;
   typedef ObsSpaces<OBS>           ObsSpaces_;
   typedef ObsVector<OBS>           ObsVector_;
+  template <typename DATA> using ObsDataVec_ = std::vector<ObsDataVector<OBS, DATA>>;
 
  public:
 /// \brief create Observations for all obs (read from ObsSpace if name is specified)
@@ -70,6 +73,9 @@ template <typename OBS> class Observations : public util::Printable {
 
 /// Perturbations
   void perturb(const ObsErrors_ &);
+
+  std::string info(const std::string & grep = "") const;
+  std::string info(const ObsDataVec_<int> &, const std::string & grep = "") const;
 
  private:
   void print(std::ostream &) const;
@@ -194,6 +200,25 @@ void Observations<OBS>::perturb(const ObsErrors_ & Rmat) {
 template <typename OBS>
 void Observations<OBS>::print(std::ostream & os) const {
   for (std::size_t jj = 0; jj < obs_.size(); ++jj) os << std::endl << obs_[jj];
+}
+// -----------------------------------------------------------------------------
+template <typename OBS>
+std::string Observations<OBS>::info(const std::string & grep) const {
+  std::stringstream ss;
+  for (size_t jj = 0; jj < obs_.size(); ++jj) {
+    ss << obs_[jj].info(grep);
+  }
+  return ss.str();
+}
+// -----------------------------------------------------------------------------
+template <typename OBS>
+std::string Observations<OBS>::info(const ObsDataVec_<int> & qcflags,
+                                    const std::string & grep) const {
+  std::stringstream ss;
+  for (size_t jj = 0; jj < obs_.size(); ++jj) {
+    ss << obs_[jj].info(grep, qcflags[jj]);
+  }
+  return ss.str();
 }
 // -----------------------------------------------------------------------------
 template <typename OBS>

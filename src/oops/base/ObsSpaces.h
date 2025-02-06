@@ -46,20 +46,21 @@ class ObsSpaces : public util::Printable,
             const eckit::mpi::Comm & time = oops::mpi::myself());
   ~ObsSpaces();
 
-/// Save files
+  /// Save files
   void save() const;
 
-/// Append new obs
+  /// Append new obs
   void updateObsSpaces(const eckit::Configuration &);
 
-/// Access
+  /// Access
   std::size_t size() const {return spaces_.size();}
   ObsSpace_ & operator[](const std::size_t ii) {return *spaces_.at(ii);}
   const ObsSpace_ & operator[](const std::size_t ii) const {return *spaces_.at(ii);}
+  bool has(const std::string &) const;
 
-/// Assimilation window
-const util::DateTime windowStart() const {return timeWindow_.start();}
-const util::DateTime windowEnd() const {return timeWindow_.end();}
+  /// Assimilation window
+  const util::DateTime windowStart() const {return timeWindow_.start();}
+  const util::DateTime windowEnd() const {return timeWindow_.end();}
 
  private:
   void print(std::ostream &) const;
@@ -110,6 +111,19 @@ void ObsSpaces<OBS>::print(std::ostream & os) const {
     os << *spaces_[jj];
   }
 }
+
+// -----------------------------------------------------------------------------
+
+template <typename OBS>
+bool ObsSpaces<OBS>::has(const std::string & name) const {
+  bool hasname = spaces_[0]->has(name);
+  for (std::size_t jj = 1; jj < spaces_.size(); ++jj) {
+    ASSERT(spaces_[jj]->has(name) == hasname);
+  }
+  return hasname;
+}
+
+// -----------------------------------------------------------------------------
 
 template<typename OBS>
 void ObsSpaces<OBS>::updateObsSpaces(const eckit::Configuration & cdaConfig) {

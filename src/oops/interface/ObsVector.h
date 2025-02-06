@@ -15,6 +15,7 @@
 #include <math.h>
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -103,6 +104,9 @@ class ObsVector : public util::Printable,
 
   /// Number of non-masked out observations (across all MPI tasks)
   unsigned int nobs() const;
+
+  std::string info(const std::string &) const;
+  std::string info(const std::string &, const ObsDataVector<OBS, int> &) const;
 
  private:
   void print(std::ostream &) const;
@@ -312,6 +316,21 @@ void ObsVector<OBS>::print(std::ostream & os) const {
   util::Timer timer(classname(), "print");
   os << *data_;
   Log::trace() << "ObsVector<OBS>::print done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+template <typename OBS>
+std::string ObsVector<OBS>::info(const std::string & grep) const {
+  Log::trace() << "ObsVector<OBS>::info starting" << std::endl;
+  util::Timer timer(classname(), "info");
+  return data_->info(grep);
+}
+// -----------------------------------------------------------------------------
+template <typename OBS>
+std::string ObsVector<OBS>::info(const std::string & grep,
+                                 const ObsDataVector<OBS, int> & flags) const {
+  Log::trace() << "ObsVector<OBS>::info starting" << std::endl;
+  util::Timer timer(classname(), "info");
+  return data_->info(grep, flags.obsdatavector());
 }
 // -----------------------------------------------------------------------------
 template <typename OBS>

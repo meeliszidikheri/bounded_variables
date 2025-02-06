@@ -17,6 +17,7 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
+#include "oops/base/Departures.h"
 #include "oops/base/Geometry.h"
 #include "oops/base/Model.h"
 #include "oops/base/ObsAuxControls.h"
@@ -44,6 +45,7 @@ namespace oops {
 /// Application runs model forecast from "initial condition" for the "forecast length"
 /// and computes H(x) on the run.
 template <typename MODEL, typename OBS> class HofX4D : public Application {
+  typedef Departures<OBS>            Departures_;
   typedef Geometry<MODEL>            Geometry_;
   typedef Model<MODEL>               Model_;
   typedef ModelAuxControl<MODEL>     ModelAux_;
@@ -99,8 +101,8 @@ template <typename MODEL, typename OBS> class HofX4D : public Application {
 
 //  Setup and initialize observer
     PostProcessor<State_> post;
-    Observers_ hofx(obspaces, oConfig);
-    hofx.initialize(geometry, obsaux, Rmat, post);
+    Observers_ hop(obspaces, oConfig);
+    hop.initialize(geometry, obsaux, Rmat, post);
 
 //  Setup Model
     const Model_ model(geometry, eckit::LocalConfiguration(fullConfig, "model"));
@@ -114,24 +116,32 @@ template <typename MODEL, typename OBS> class HofX4D : public Application {
     Log::test() << "Final state: " << xx << std::endl;
 
 //  Get observations from observer
-    Observations_ yobs(obspaces);
+    Observations_ hofx(obspaces);
     std::vector<ObsDataInt_> qcflags;
     for (size_t jj = 0; jj < obspaces.size(); ++jj) {
       ObsDataInt_ qc(obspaces[jj], obspaces[jj].obsvariables());
       qcflags.push_back(qc);
     }
-    hofx.finalize(yobs, qcflags);
-    Log::info() << "H(x): " << yobs << std::endl << "End H(x)" << std::endl;
-    Log::test() << "H(x): " << yobs << std::endl << "End H(x)" << std::endl;
+    hop.finalize(hofx, qcflags);
+    Log::info() << "H(x): " << hofx.info("H(x): ") << std::endl;
+    Log::test() << "H(x): " << hofx << std::endl << "End H(x)" << std::endl;
 
 //  Perturb H(x) if needed
     if (oConfig.getBool("obs perturbations", false)) {
-      yobs.perturb(Rmat);
-      Log::test() << "Perturbed H(x): " << yobs << std::endl << "End Perturbed H(x)" << std::endl;
+      hofx.perturb(Rmat);
+      Log::info() << "Perturbed H(x): " << hofx.info("Perturbed H(x): ") << std::endl;
+      Log::test() << "Perturbed H(x): " << hofx << std::endl << "End Perturbed H(x)" << std::endl;
+    }
+
+//  O-B diagnostics if obs available
+    if (obspaces.has("ObsValue")) {
+      Observations_ yobs(obspaces, "ObsValue");
+      Departures_ ydep(hofx - yobs);
+      Log::info() << "O-B :" << ydep.info("O-B") << std::endl;
     }
 
 //  Save H(x) as observations (if "make obs" == true)
-    if (fullConfig.getBool("make obs", false)) yobs.save("ObsValue");
+    if (fullConfig.getBool("make obs", false)) hofx.save("ObsValue");
     obspaces.save();
 
     return 0;

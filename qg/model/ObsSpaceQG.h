@@ -78,9 +78,10 @@ class ObsSpaceQG : public oops::ObsSpaceBase {
   /// Append new obs
   void updateObsSpace(const eckit::Configuration &);
 
-
   /// interface with Fortran
   const F90odb & toFortran() const {return key_;}
+
+  bool has(const std::string &) const;
 
  private:
   void print(std::ostream &) const;

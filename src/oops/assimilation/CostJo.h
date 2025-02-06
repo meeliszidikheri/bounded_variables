@@ -222,17 +222,10 @@ double CostJo<MODEL, OBS>::computeCost() {
   Rmat_->inverseMultiply(*gradFG_);
 
   // Print diagnostics
-  Log::info() << "Jo Observations:" << std::endl << *yobs_
-          << "End Jo Observations"  << std::endl;
-
-  Log::info() << "Jo Observations Equivalent:" << std::endl << yeqv
-          << "End Jo Observations Equivalent"  << std::endl;
-
-  Log::info() << "Jo Bias Corrected Departures:" << std::endl << ydep
-          << "End Jo Bias Corrected Departures"  << std::endl;
-
-  Log::info() << "Jo Observations Errors:" << std::endl << *Rmat_
-          << "End Jo Observations Errors"  << std::endl;
+  Log::info() << "Jo Observations:"              << yobs_->info(qcflags_, "Jo Obs :") << std::endl;
+  Log::info() << "Jo Observations Equivalent:"   <<   yeqv.info(qcflags_, "Jo H(x):") << std::endl;
+  Log::info() << "Jo Bias Corrected Departures:" <<   ydep.info(qcflags_, "Jo Dep :") << std::endl;
+  Log::info() << "Jo Observations Errors:" << std::endl << *Rmat_ << std::endl;
 
   // Print Jo table
   double zjo = 0.0;
@@ -282,7 +275,6 @@ double CostJo<MODEL, OBS>::printJo(size_t jj, Departures_ & ydep, std::ostream &
 
   std::vector<eckit::LocalConfiguration> subconfs =
       eckit::LocalConfiguration(conf_, "observers").getSubConfigurations();
-  Log::trace() << "CostJo::printJo subconf" << subconfs[jj] << std::endl;
   if (subconfs[jj].getBool("monitoring only", false)) {
     os << " (Monitoring only)";
     zz = 0.0;

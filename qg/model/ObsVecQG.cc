@@ -10,6 +10,7 @@
  */
 
 #include <math.h>
+#include <sstream>
 
 #include "oops/util/Logger.h"
 
@@ -153,12 +154,29 @@ void ObsVecQG::print(std::ostream & os) const {
     double zmin, zmax, zavg;
     qg_obsvec_stats_f90(keyOvec_, zmin, zmax, zavg);
     std::ios_base::fmtflags f(os.flags());
-    os << obsdb_.obsname() << " nobs= " << nobs()
-       << "  Min=" << zmin
-       << ", Max=" << zmax
-       << ", Average=" << zavg;
+    os << std::left << std::setw(8) << obsdb_.obsname() << std::right
+       << std::setw(0) << " nobs= " << std::setw(5) << nobs()
+       << std::setw(0) << "  Min="  << std::setw(12) << zmin
+       << std::setw(0) << ", Max="  << std::setw(12) << zmax
+       << std::setw(0) << ", Average=" << std::setw(12) << zavg;
     os.flags(f);
   }
+}
+// -----------------------------------------------------------------------------
+std::string ObsVecQG::info(const std::string & prefix) const {
+  std::stringstream ss;
+  this->print(ss);
+  std::string grep = "\n" + prefix;
+  if (!grep.empty() && std::isalnum(grep.back())) grep += ": ";
+  return "\n" + ss.str();
+}
+// -----------------------------------------------------------------------------
+std::string ObsVecQG::info(const std::string & prefix, const ObsDataQG<int> &) const {
+  std::stringstream ss;
+  this->print(ss);
+  std::string grep = "\n" + prefix;
+  if (!grep.empty() && std::isalnum(grep.back())) grep += ": ";
+  return grep + ss.str();
 }
 // -----------------------------------------------------------------------------
 unsigned int ObsVecQG::nobs() const {

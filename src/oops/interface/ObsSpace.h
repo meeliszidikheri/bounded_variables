@@ -65,6 +65,7 @@ class ObsSpace : public util::Printable,
 
 // Other
   const std::string & obsname() const {return obsdb_->obsname();}
+  bool has(const std::string & name) const {return obsdb_->has(name);}
 
   /// Iterator to the first observation
   ObsIterator_ begin() const;

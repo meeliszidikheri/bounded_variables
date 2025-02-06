@@ -154,6 +154,13 @@ int ObsSpaceQG::nobs() const {
 }
 // -----------------------------------------------------------------------------
 
+bool ObsSpaceQG::has(const std::string & colname) const {
+  int ihas;
+  qg_obsdb_has_f90(key_, colname.size(), colname.c_str(), ihas);
+  return ihas > 0;
+}
+// -----------------------------------------------------------------------------
+
 void ObsSpaceQG::updateObsSpace(const eckit::Configuration & appendConfig) {
   throw eckit::NotImplemented("ObsSpaceQG::updateObsSpace() is not implemented.", Here());
 }
