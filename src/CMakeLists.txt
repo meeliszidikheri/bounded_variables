@@ -779,6 +779,7 @@ ecbuild_add_test( TARGET  test_util_pushstringvector
 ecbuild_add_test( TARGET  test_util_parameters
                   SOURCES test/base/Parameters.cc
                   ARGS    "test/testinput/parameters.yaml"
+                  ENVIRONMENT VALIDATE_PARAMETERS=1
                   LIBS    oops )
 
 ecbuild_add_executable(
