@@ -37,6 +37,7 @@ oops/assimilation/FGMRESMinimizer.h
 oops/assimilation/FtnTriDiagSpectrum.F90
 oops/assimilation/FullGMRES.h
 oops/assimilation/GETKFSolver.h
+oops/assimilation/GETKFSolverPert.h
 oops/assimilation/gletkfInterface.h
 oops/assimilation/gletkf_interface.f90
 oops/assimilation/gletkf_mod.f90
@@ -60,6 +61,7 @@ oops/assimilation/LBHessianMatrix.h
 oops/assimilation/LBMinimizer.h
 oops/assimilation/LETKFSolver.h
 oops/assimilation/LETKFSolverGSI.h
+oops/assimilation/LETKFSolverPert.h
 oops/assimilation/LocalEnsembleSolverParameters.h
 oops/assimilation/LocalEnsembleSolver.h
 oops/assimilation/Minimizer.h

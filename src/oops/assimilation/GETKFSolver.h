@@ -104,7 +104,7 @@ class GETKFSolver : public LocalEnsembleSolver<MODEL, OBS> {
   void applyWeights(const IncrementEnsemble4D_ &, IncrementEnsemble4D_ &,
                     const GeometryIterator_ &);
 
- private:
+ protected:
   // parameters
   size_t nens_;
   const Geometry_ & geometry_;
@@ -328,10 +328,10 @@ void GETKFSolver<MODEL, OBS>::computeWeights(const Eigen::VectorXd & dy,
   const int nobsl = dy.size();
 
   // cast eigen<double> to eigen<float>
-  Eigen::VectorXf dy_f = dy.cast<float>();
-  Eigen::MatrixXf Yb_f = Yb.cast<float>();
-  Eigen::MatrixXf YbOrig_f = YbOrig.cast<float>();
-  Eigen::VectorXf R_invvar_f = R_invvar.cast<float>();
+  const Eigen::VectorXf dy_f = dy.cast<float>();
+  const Eigen::MatrixXf Yb_f = Yb.cast<float>();
+  const Eigen::MatrixXf YbOrig_f = YbOrig.cast<float>();
+  const Eigen::VectorXf R_invvar_f = R_invvar.cast<float>();
 
   Eigen::MatrixXf Wa_f(nanal_, this->nens_);
   Eigen::VectorXf wa_f(nanal_);
@@ -371,7 +371,7 @@ void GETKFSolver<MODEL, OBS>::applyWeights(const IncrementEnsemble4D_ & bkg_pert
 
     // postmulptiply
     // ensemble mean update
-    Eigen::VectorXd xa = XbModulated*wa_;
+    const Eigen::VectorXd xa = XbModulated*wa_;
     // ensemble perturbation update
     // Eq (10) from Lei 2018. (-) sign is accounted for in the Wa_ computation
     Eigen::MatrixXd Xa = XbOriginal + XbModulated*Wa_;
@@ -401,7 +401,7 @@ void GETKFSolver<MODEL, OBS>::measurementUpdate(const IncrementEnsemble4D_ & bkg
      (this->invVarR_)->mask(this->HZb_[iens]);
   }
   locvector.mask(*(this->invVarR_));
-  Eigen::VectorXd local_omb_vec = this->omb_.packEigen(locvector);
+  const Eigen::VectorXd local_omb_vec = this->omb_.packEigen(locvector);
 
   if (local_omb_vec.size() == 0) {
     // no obs. so no need to update Wa_ and wa_
@@ -410,13 +410,12 @@ void GETKFSolver<MODEL, OBS>::measurementUpdate(const IncrementEnsemble4D_ & bkg
   } else {
     // if obs are present do normal KF update
     // get local Yb & HZ
-    Eigen::MatrixXd local_Yb_mat = this->Yb_.packEigen(locvector);
-    Eigen::MatrixXd local_HZ_mat = this->HZb_.packEigen(locvector);
-    // create local obs errors
-    Eigen::VectorXd local_invVarR_vec = this->invVarR_->packEigen(locvector);
-    // and apply localization
-    Eigen::VectorXd localization = locvector.packEigen(locvector);
-    local_invVarR_vec.array() *= localization.array();
+    const Eigen::MatrixXd local_Yb_mat = this->Yb_.packEigen(locvector);
+    const Eigen::MatrixXd local_HZ_mat = this->HZb_.packEigen(locvector);
+    // create local obs errors and apply localization
+    const Eigen::VectorXd localization = locvector.packEigen(locvector);
+    const Eigen::VectorXd local_invVarR_vec = this->invVarR_->packEigen(locvector).array()
+                                              * localization.array();
     computeWeights(local_omb_vec, local_HZ_mat, local_Yb_mat, local_invVarR_vec);
     applyWeights(bkg_pert, ana_pert, i);
   }
