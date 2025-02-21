@@ -61,6 +61,12 @@ class ModelL95 : public oops::interface::ModelBase<L95Traits>,
   const util::Duration tstep_;
   const double dt_;
   const oops::Variables vars_;
+  double alpha_;
+  double S_;
+  double grid_spacing_;
+  bool include_aerosol_;
+  bool dust_model_;
+  double exponent_;
 };
 
 // -----------------------------------------------------------------------------
