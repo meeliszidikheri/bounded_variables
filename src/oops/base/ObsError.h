@@ -46,7 +46,7 @@ class ObsError : public util::Printable,
   void inverseMultiply(ObsVector_ & dy) const;
 
   /// Generate a random perturbation in \p dy.
-  void randomize(ObsVector_ & dy) const;
+  void randomize(ObsVector_ & dy, ObsVector_ & yobs) const;
 
   /// Save obs errors.
   void save(const std::string &) const;
@@ -120,10 +120,10 @@ void ObsError<OBS>::inverseMultiply(ObsVector_ & dy) const {
 // -----------------------------------------------------------------------------
 
 template <typename OBS>
-void ObsError<OBS>::randomize(ObsVector_ & dy) const {
+void ObsError<OBS>::randomize(ObsVector_ & dy, ObsVector_ & yobs) const {
   Log::trace() << "ObsError<OBS>::randomize starting" << std::endl;
   util::Timer timer(classname(), "randomize");
-  err_->randomize(dy);
+  err_->randomize(dy, yobs);
   Log::trace() << "ObsError<OBS>::randomize done" << std::endl;
 }
 

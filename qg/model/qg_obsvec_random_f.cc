@@ -13,9 +13,15 @@
 namespace qg {
 // -----------------------------------------------------------------------------
 
-void qg_obsvec_random_f(const ObsSpaceQG & odb, const int & nn, double * xx) {
+void qg_obsvec_random_f(const ObsSpaceQG & odb, const int & nn, double * xx,
+                        const int & distrb, const double & relvar) {
+  if (distrb == 0) {
   util::NormalDistribution<double> dist(nn, 0.0, 1.0, odb.getSeed());
   for (int jj = 0; jj < nn; ++jj) xx[jj] = dist[jj];
+  } else {
+  util::InverseGammaDistribution<double> dist(nn, 1.0, relvar, odb.getSeed());
+  for (int jj = 0; jj < nn; ++jj) xx[jj] = dist[jj];
+  }
 }
 
 // -----------------------------------------------------------------------------

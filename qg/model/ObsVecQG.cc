@@ -101,8 +101,12 @@ void ObsVecQG::invert() {
   qg_obsvec_invert_f90(keyOvec_);
 }
 // -----------------------------------------------------------------------------
-void ObsVecQG::random() {
-  qg_obsvec_random_f90(obsdb_, keyOvec_);
+void ObsVecQG::random(const std::string & distrbType, const double & relvar) {
+  if (distrbType == "Normal") {
+  qg_obsvec_random_f90(obsdb_, keyOvec_, 0, relvar);
+  } else {
+  qg_obsvec_random_f90(obsdb_, keyOvec_, 1, relvar);
+  }
 }
 // -----------------------------------------------------------------------------
 double ObsVecQG::dot_product_with(const ObsVecQG & other) const {

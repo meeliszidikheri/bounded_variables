@@ -9,8 +9,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef OOPS_GENERIC_OBSERRORDIAG_H_
-#define OOPS_GENERIC_OBSERRORDIAG_H_
+#ifndef OOPS_GENERIC_OBSERRORDIAGINVGAMMA_H_
+#define OOPS_GENERIC_OBSERRORDIAGINVGAMMA_H_
 
 #include <sstream>
 #include <string>
@@ -28,12 +28,15 @@
 namespace oops {
 
 /// \brief Parameters for diagonal obs errors
-class ObsErrorDiagParameters : public ObsErrorParametersBase {
-  OOPS_CONCRETE_PARAMETERS(ObsErrorDiagParameters, ObsErrorParametersBase)
+class ObsErrorDiagInvGammaParameters : public ObsErrorParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ObsErrorDiagInvGammaParameters, ObsErrorParametersBase)
 
  public:
   /// perturbation amplitude multiplier
   Parameter<double> pert{"obs perturbations amplitude", 1.0, this};
+
+  /// relative variance parameter 
+  Parameter<double> relvar{"relative variance", 1.0, this};
 
   /// Set to true to constrain observation perturbations to have a zero ensemble mean.
   ///
@@ -65,16 +68,16 @@ class ObsErrorDiagParameters : public ObsErrorParametersBase {
 // -----------------------------------------------------------------------------
 /// \brief Diagonal observation error covariance matrix.
 template<typename OBS>
-class ObsErrorDiag : public ObsErrorBase<OBS> {
+class ObsErrorDiagInvGamma : public ObsErrorBase<OBS> {
   typedef ObsSpace<OBS>              ObsSpace_;
   typedef ObsVector<OBS>             ObsVector_;
 
  public:
   /// The type of parameters passed to the constructor.
   /// This typedef is used by the ObsErrorFactory.
-  typedef ObsErrorDiagParameters Parameters_;
+  typedef ObsErrorDiagInvGammaParameters Parameters_;
 
-  ObsErrorDiag(const Parameters_ &, const ObsSpace_ &);
+  ObsErrorDiagInvGamma(const Parameters_ &, const ObsSpace_ &);
 
 /// Update after obs errors potentially changed
   void update(const ObsVector_ &) override;
@@ -100,12 +103,15 @@ class ObsErrorDiag : public ObsErrorBase<OBS> {
 /// Get inverseVariance
   ObsVector_ inverseVariance() const override {return inverseVariance_;}
 
+//  const ObsSpace_ obsgeom;
+
+
  private:
   void print(std::ostream &) const override;
 
-  void randomizeWithoutZeroEnsembleMean(ObsVector_ &) const;
+  void randomizeWithoutZeroEnsembleMean(ObsVector_ &, ObsVector_ &) const;
 
-  void randomizeWithZeroEnsembleMean(ObsVector_ &) const;
+  void randomizeWithZeroEnsembleMean(ObsVector_ &, ObsVector_ &) const;
 
   ObsVector_ stddev_;
   ObsVector_ inverseVariance_;
@@ -115,19 +121,20 @@ class ObsErrorDiag : public ObsErrorBase<OBS> {
 // =============================================================================
 
 template<typename OBS>
-ObsErrorDiag<OBS>::ObsErrorDiag(const ObsErrorDiagParameters & options, const ObsSpace_ & obsgeom)
+ObsErrorDiagInvGamma<OBS>::ObsErrorDiagInvGamma(const ObsErrorDiagInvGammaParameters & options, const ObsSpace_ & obsgeom)
   : stddev_(obsgeom, "ObsError"), inverseVariance_(obsgeom, ""), options_(options)
 {
+  Log::info() << "Beginning ObsErrorDiagInvGamma contructor" << std::endl;
   inverseVariance_ = stddev_;
   inverseVariance_ *= stddev_;
   inverseVariance_.invert();
-  Log::trace() << "ObsErrorDiag:ObsErrorDiag constructed nobs = " << stddev_.nobs() << std::endl;
+  Log::trace() << "ObsErrorDiagInvGamma:ObsErrorDiagInvGamma constructed nobs = " << stddev_.nobs() << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::update(const ObsVector_ & obserr) {
+void ObsErrorDiagInvGamma<OBS>::update(const ObsVector_ & obserr) {
   stddev_ = obserr;
   inverseVariance_ = stddev_;
   inverseVariance_ *= stddev_;
@@ -138,31 +145,32 @@ void ObsErrorDiag<OBS>::update(const ObsVector_ & obserr) {
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::multiply(ObsVector_ & dy) const {
+void ObsErrorDiagInvGamma<OBS>::multiply(ObsVector_ & dy) const {
   dy /= inverseVariance_;
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::inverseMultiply(ObsVector_ & dy) const {
+void ObsErrorDiagInvGamma<OBS>::inverseMultiply(ObsVector_ & dy) const {
   dy *= inverseVariance_;
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::randomize(ObsVector_ & dy, ObsVector_ & yobs) const {
+void ObsErrorDiagInvGamma<OBS>::randomize(ObsVector_ & dy, ObsVector_ & yobs) const {
+  Log::info() << "Obs in randomize() in ObsErrorDiagInvGamma: " << yobs << std::endl; 
   if (options_.zeroMeanPerturbations)
-    randomizeWithZeroEnsembleMean(dy);
+    randomizeWithZeroEnsembleMean(dy, yobs);
   else
-    randomizeWithoutZeroEnsembleMean(dy);
+    randomizeWithoutZeroEnsembleMean(dy, yobs);
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::randomizeWithZeroEnsembleMean(ObsVector_ & dy) const {
+void ObsErrorDiagInvGamma<OBS>::randomizeWithZeroEnsembleMean(ObsVector_ & dy, ObsVector_ & yobs) const {
   ObsVector_ perturbation(dy);
   ObsVector_ sum(dy);
   sum.zero();
@@ -172,40 +180,48 @@ void ObsErrorDiag<OBS>::randomizeWithZeroEnsembleMean(ObsVector_ & dy) const {
   const int myMember = options_.member.value().value();
   const int numMembers = options_.numberOfMembers.value().value();
   for (int member = 1; member <= numMembers; ++member) {
-    perturbation.random("Normal", 1.0);
+    perturbation.random("InvGamma", options_.relvar);
     sum += perturbation;
     if (member == myMember)
       dy = perturbation;
   }
 
-  // Subtract the ensemble mean of perturbations from this member's perturbations.
-  dy.axpy(-1.0 / numMembers, sum);
-
-  // Scale perturbations to the requested amplitude.
-  dy *= stddev_;
+  // Scale perturbations so ensemble mean = yobs 
+  dy *= yobs;
+  dy /= sum; 
+  dy *= numMembers;
+  // subtract yobs to get perturbations around yobs
+  dy -= yobs;
+  // scale perturbations by optional factor
   dy *= std::sqrt(numMembers / (numMembers - 1.0)) * options_.pert.value();
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::randomizeWithoutZeroEnsembleMean(ObsVector_ & dy) const {
-  dy.random("Normal", 1.0);
-  dy *= stddev_;
+void ObsErrorDiagInvGamma<OBS>::randomizeWithoutZeroEnsembleMean(ObsVector_ & dy, ObsVector_ & yobs) const {
+  Log::info() << "yobs in randomizeWithoutZeroEnsembleMean: " << yobs << std::endl;
+  Log::info() << "Test relvar parameter: " << options_.relvar << std::endl;
+  dy.random("InvGamma", options_.relvar);
+  // multiply by yobs to get full IG distribution
+  dy *= yobs;
+  // subtract yobs to get perturbations around yobs
+  dy -= yobs;
+  // scale perturbations by optional factor
   dy *= options_.pert;
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::save(const std::string & name) const {
+void ObsErrorDiagInvGamma<OBS>::save(const std::string & name) const {
   stddev_.save(name);
 }
 
 // -----------------------------------------------------------------------------
 
 template<typename OBS>
-void ObsErrorDiag<OBS>::print(std::ostream & os) const {
+void ObsErrorDiagInvGamma<OBS>::print(std::ostream & os) const {
   os << "Diagonal observation error covariance" << std::endl << stddev_;
 }
 
@@ -214,4 +230,4 @@ void ObsErrorDiag<OBS>::print(std::ostream & os) const {
 
 }  // namespace oops
 
-#endif  // OOPS_GENERIC_OBSERRORDIAG_H_
+#endif  // OOPS_GENERIC_OBSERRORDIAGINVGAMMA_H_

@@ -81,7 +81,7 @@ class ObsVector : public util::Printable,
   /// Set each value in this ObsVector to its inverse
   void invert();
   /// Set each value in this ObsVector to a random value
-  void random();
+  void random(const std::string & distrbType, const double & relvar);
 
   /// Return the dot product between this ObsVector and another one \p other
   double dot_product_with(const ObsVector & other) const;
@@ -255,11 +255,11 @@ void ObsVector<OBS>::invert() {
 }
 // -----------------------------------------------------------------------------
 template <typename OBS>
-void ObsVector<OBS>::random() {
+void ObsVector<OBS>::random(const std::string & distrbType, const double & relvar) {
   Log::trace() << "ObsVector<OBS>::random starting" << std::endl;
   util::Timer timer(classname(), "random");
 
-  data_->random();
+  data_->random(distrbType, relvar);
 
   Log::trace() << "ObsVector<OBS>::random done" << std::endl;
 }

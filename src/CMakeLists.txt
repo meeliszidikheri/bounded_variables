@@ -257,6 +257,8 @@ oops/generic/ModelBase.h
 oops/generic/NormScalar.h
 oops/generic/ObsErrorDiag.h
 oops/generic/ObsErrorDiag.cc
+oops/generic/ObsErrorDiagInvGamma.h
+oops/generic/ObsErrorDiagInvGamma.cc
 oops/generic/ObsErrorBase.h
 oops/generic/PseudoLinearModelIncrement4D.h
 oops/generic/PseudoModel.h

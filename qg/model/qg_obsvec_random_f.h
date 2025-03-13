@@ -12,7 +12,7 @@ namespace qg {
   class ObsSpaceQG;
 
 extern "C" {
-  void qg_obsvec_random_f(const ObsSpaceQG &, const int &, double *);
+  void qg_obsvec_random_f(const ObsSpaceQG &, const int &, double *, const int &, const double &);
 }
 
 }  // namespace qg

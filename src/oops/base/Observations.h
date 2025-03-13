@@ -192,7 +192,7 @@ size_t Observations<OBS>::nobs() const {
 template <typename OBS>
 void Observations<OBS>::perturb(const ObsErrors_ & Rmat) {
   Departures_ ypert(obsdb_);
-  Rmat.randomize(ypert);
+  Rmat.randomize(ypert, obs_);
   *this += ypert;
   Log::trace() << "Observations perturbed" << std::endl;
 }

@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "oops/base/ObsVector.h"
 
 namespace oops {
   class Variables;
@@ -33,6 +34,7 @@ class LETKFSolverPert : public LETKFSolver<MODEL, OBS> {
   typedef ObsSpaces<OBS>              ObsSpaces_;
   typedef StateSet<MODEL>             StateSet_;
   typedef StateEnsemble4D<MODEL>      StateEnsemble4D_;
+  typedef ObsVector<OBS>              ObsVector_;
 
  public:
   static const std::string classname() {return "oops::LETKFSolverPert";}
@@ -95,10 +97,18 @@ Observations<OBS> LETKFSolverPert<MODEL, OBS>::computeHofX(const StateEnsemble4D
   // compute observation perturbations minus ensemble hofx perturbations
   Departures_ ypertDepSum(this->obspaces_);
 
+  // Get observations
+  ObsSpaces_ obsdb_(this->obspaces_);
+  std::vector<ObsVector_> obs_;
+  obs_.reserve(obsdb_.size());
+  for (std::size_t jj = 0; jj < obsdb_.size(); ++jj) {
+    obs_.emplace_back(obsdb_[jj], "ObsValue");
+  }
+
   ypertDepSum.zero();
   for (size_t iens = 0; iens < (this->nens_); ++iens) {
     OmbPertDepEns_[iens].zero();
-    (*(this->R_)).randomize(OmbPertDepEns_[iens]);
+    (*(this->R_)).randomize(OmbPertDepEns_[iens], obs_);
     ypertDepSum += OmbPertDepEns_[iens];
   }
 

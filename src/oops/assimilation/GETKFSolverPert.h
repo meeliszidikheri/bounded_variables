@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "oops/base/ObsVector.h"
 
 namespace oops {
   class Variables;
@@ -34,6 +35,7 @@ class GETKFSolverPert : public GETKFSolver<MODEL, OBS> {
   typedef StateSet<MODEL>             StateSet_;
   typedef StateEnsemble4D<MODEL>      StateEnsemble4D_;
   typedef IncrementEnsemble4D<MODEL>  IncrementEnsemble4D_;
+  typedef ObsVector<OBS>              ObsVector_;
 
  public:
   static const std::string classname() {return "oops::GETKFSolverPert";}
@@ -94,10 +96,18 @@ Observations<OBS> GETKFSolverPert<MODEL, OBS>::computeHofX(const StateEnsemble4D
   Departures_ ypertDepTmp(this->obspaces_);
   Departures_ ypertDepSum(this->obspaces_);
 
+  // Get observations
+  ObsSpaces_ obsdb_(this->obspaces_);
+  std::vector<ObsVector_> obs_;
+  obs_.reserve(obsdb_.size());
+  for (std::size_t jj = 0; jj < obsdb_.size(); ++jj) {
+    obs_.emplace_back(obsdb_[jj], "ObsValue");
+  }
+
   ypertDepSum.zero();
   for (size_t iens = 0; iens < (this->nens_); ++iens) {
     ypertDepTmp.zero();
-    (*(this->R_)).randomize(ypertDepTmp);
+    (*(this->R_)).randomize(ypertDepTmp, obs_);
     (this->Yb_)[iens] *= -1;
     (this->Yb_)[iens] += ypertDepTmp;
     ypertDepSum += ypertDepTmp;

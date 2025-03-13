@@ -135,7 +135,8 @@ template <typename OBS> void testMultiplies() {
 
     // create random vector dy and its copies dy1, dy2
     ObsVector_ dy(Test_::obspace()[jj], "");
-    R.randomize(dy);
+    ObsVector_ yobs(dy);
+    R.randomize(dy, yobs);
     ObsVector_ dy1(dy);
     ObsVector_ dy2(dy);
     oops::Log::info() << "Random vector dy: " << dy << std::endl;

@@ -26,12 +26,14 @@ public :: qg_obsvec_setup,qg_obsvec_clone,qg_obsvec_delete,qg_obsvec_copy,qg_obs
         & qg_obsvec_size,qg_obsvec_nobs,qg_obsvec_nobs_withmask,qg_obsvec_get_withmask
 ! ------------------------------------------------------------------------------
 interface
-  subroutine qg_obsvec_random_i(odb,nn,zz) bind(c,name='qg_obsvec_random_f')
+  subroutine qg_obsvec_random_i(odb,nn,zz,distrb,relvar) bind(c,name='qg_obsvec_random_f')
   use iso_c_binding
   implicit none
   type(c_ptr),intent(in) :: odb
   integer(c_int),intent(in) :: nn
   real(c_double),intent(inout) :: zz
+  integer :: distrb
+  double precision :: relvar
   end subroutine qg_obsvec_random_i
 end interface
 ! ------------------------------------------------------------------------------
@@ -339,7 +341,7 @@ where(self%values /= self%missing) self%values = 1.0/self%values
 end subroutine qg_obsvec_invert
 ! ------------------------------------------------------------------------------
 !> Generate random observation vector
-subroutine qg_obsvec_random(c_odb,self)
+subroutine qg_obsvec_random(c_odb,self,distrb,relvar)
 
 implicit none
 
@@ -349,12 +351,14 @@ type(qg_obsvec),intent(inout) :: self !< Observation vector
 
 ! Local variables
 integer :: nval
+integer :: distrb
+double precision :: relvar
 
 ! Compute total size
 nval = self%nobs*self%nlev
 
 ! Get random values
-if (nval.gt.0) call qg_obsvec_random_i(c_odb,nval,self%values(1,1))
+if (nval.gt.0) call qg_obsvec_random_i(c_odb,nval,self%values(1,1),distrb,relvar)
 
 end subroutine qg_obsvec_random
 ! ------------------------------------------------------------------------------

@@ -56,7 +56,7 @@ class ObsErrorBase : public util::Printable,
   virtual void inverseMultiply(ObsVector_ & dy) const = 0;
 
 /// Generate random perturbation in \p dy.
-  virtual void randomize(ObsVector_ & dy) const = 0;
+  virtual void randomize(ObsVector_ & dy, ObsVector_ & yobs) const = 0;
 
 /// Save obs errors to the group \p name.
   virtual void save(const std::string &name) const = 0;
