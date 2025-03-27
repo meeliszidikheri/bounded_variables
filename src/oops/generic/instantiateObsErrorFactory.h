@@ -19,7 +19,7 @@ namespace oops {
 
 template <typename OBS> void instantiateObsErrorFactory() {
   static ObsErrorMaker<OBS, ObsErrorDiag<OBS> > makerDiag_("diagonal");
-  static ObsErrorMaker<OBS, ObsErrorDiagInvGamma<OBS> > makerDiagInvGamma_("diagonalInvGamma");
+  static ObsErrorMaker<OBS, ObsErrorDiagInvGamma<OBS> > makerDiagInvGamma_("diagonal IG");
 }
 
 }  // namespace oops
