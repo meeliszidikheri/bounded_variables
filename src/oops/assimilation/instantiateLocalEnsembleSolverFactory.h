@@ -13,6 +13,7 @@
 #include "oops/assimilation/LETKFSolver.h"
 #include "oops/assimilation/LETKFSolverGSI.h"
 #include "oops/assimilation/LETKFSolverPert.h"
+#include "oops/assimilation/LETKFSolverPertGaussian.h"
 #include "oops/assimilation/LocalEnsembleSolver.h"
 
 namespace oops {
@@ -22,6 +23,8 @@ template <typename MODEL, typename OBS> void instantiateLocalEnsembleSolverFacto
   static LocalEnsembleSolverMaker<MODEL, OBS, LETKFSolverGSI<MODEL, OBS> > makerGSI_("GSI LETKF");
   static LocalEnsembleSolverMaker<MODEL, OBS, LETKFSolverPert<MODEL, OBS>
          > makerLETKFPert_("Perturbed LETKF");
+  static LocalEnsembleSolverMaker<MODEL, OBS, LETKFSolverPert<MODEL, OBS>
+         > makerLETKFPertGaussian_("Gaussian Perturbed LETKF");
   static LocalEnsembleSolverMaker<MODEL, OBS, GETKFSolver<MODEL, OBS> > makerGETKF_("GETKF");
   static LocalEnsembleSolverMaker<MODEL, OBS, GETKFSolverPert<MODEL, OBS>
          > makerGETKFPert_("Perturbed GETKF");
