@@ -6,3 +6,4 @@ The aim of this project is to implement bounded variable versions of the LETKF a
 
 The GIG analysis update equations for EnKF/LETKF/GETKF are isomorphic to the corresponding Gaussian equations currently implemented in JEDI. Hence "only" need to change the calculation of the error covariance matrix, R, and the perturbed observations, yi (see attached slide for clarification).
 
+[Bounded-variable EnKF.pptx](https://github.com/user-attachments/files/19496991/Bounded-variable.EnKF.pptx)
