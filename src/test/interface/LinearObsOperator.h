@@ -323,7 +323,7 @@ template <typename OBS> void testAdjoint() {
     EXPECT(dot_product(dy1, dy1) > zero);
 
     // calculate (dx2, ybinc2) = HT dy2 (with random dy2)
-    dy2.random();
+    dy2.random("Normal", 1.0);
     EXPECT(dot_product(dy2, dy2) > zero);  //  BOOST_REQUIRE
     dx2.zero();
     ybinc2.zero();
@@ -533,7 +533,7 @@ template <typename OBS> void testException() {
       ObsVector_ dy2(Test_::obspace()[jj]);
       GeoVaLs_ dx2(obsTypeParams.geovals, Test_::obspace()[jj], hoptlvars);
       Bobsbias.randomize(ybinc);
-      dy2.random();
+      dy2.random("Normal", 1.0);
       dx2.zero();
       ybinc.zero();
       // The simulateObsAD method is expected to throw an exception

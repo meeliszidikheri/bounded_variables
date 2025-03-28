@@ -60,7 +60,7 @@ template <typename OBS> void testObsVector() {
   const double tolerance = 1.0e-10;
   for (std::size_t jj = 0; jj < Test_::obspace().size(); ++jj) {
     oops::ObsVector<OBS> ov1(Test_::obspace()[jj]);
-    ov1.random();
+    ov1.random("Normal", 1.0);
 
     ObsDataVector_ odv(ov1);
     oops::Log::info() << "Printing random ObsDataVector: " << odv << std::endl;

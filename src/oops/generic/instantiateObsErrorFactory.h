@@ -13,11 +13,13 @@
 
 #include "oops/generic/ObsErrorBase.h"
 #include "oops/generic/ObsErrorDiag.h"
+#include "oops/generic/ObsErrorDiagInvGamma.h"
 
 namespace oops {
 
 template <typename OBS> void instantiateObsErrorFactory() {
   static ObsErrorMaker<OBS, ObsErrorDiag<OBS> > makerDiag_("diagonal");
+  static ObsErrorMaker<OBS, ObsErrorDiagInvGamma<OBS> > makerDiagInvGamma_("diagonal IG");
 }
 
 }  // namespace oops

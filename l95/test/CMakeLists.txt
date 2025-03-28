@@ -94,6 +94,8 @@ list( APPEND l95_test_input
   testinput/increment.yaml
   testinput/letkf_gsi.yaml
   testinput/letkf.yaml
+  testinput/letkf_perturbed.yaml
+  testinput/letkf_perturbed_gaussian.yaml
   testinput/letkf_linearobserver.yaml
   testinput/letkf_perturbed_linearobserver.yaml
   testinput/letkf_noobs.yaml
@@ -214,6 +216,8 @@ list( APPEND l95_testoutput
   testoutput/hofx3d.test
   testoutput/hofx3d_for_getkf.test
   testoutput/letkf.test
+  testoutput/letkf_perturbed.test
+  testoutput/letkf_perturbed_gaussian.test
   testoutput/letkf_perturbed_linearobserver.test
   testoutput/letkf_noobs.test
   testoutput/letkf_qc.test
@@ -819,6 +823,18 @@ ecbuild_add_test( TARGET test_l95_addincrement_scaled
 ecbuild_add_test( TARGET test_l95_letkf
                   COMMAND l95_letkf.x
                   ARGS testinput/letkf.yaml
+                  OMP 2
+                  TEST_DEPENDS test_l95_makeobs3d test_l95_genenspert )
+
+ecbuild_add_test( TARGET test_l95_letkf_pert
+                  COMMAND l95_letkf.x
+                  ARGS testinput/letkf_perturbed.yaml
+                  OMP 2
+                  TEST_DEPENDS test_l95_makeobs3d test_l95_genenspert )
+
+ecbuild_add_test( TARGET test_l95_letkf_pert_gauss
+                  COMMAND l95_letkf.x
+                  ARGS testinput/letkf_perturbed_gaussian.yaml
                   OMP 2
                   TEST_DEPENDS test_l95_makeobs3d test_l95_genenspert )
 

@@ -353,13 +353,15 @@ call qg_obsvec_invert(self)
 end subroutine qg_obsvec_invert_c
 ! ------------------------------------------------------------------------------
 !> Generate random observation vector
-subroutine qg_obsvec_random_c(c_odb,c_self) bind(c,name='qg_obsvec_random_f90')
+subroutine qg_obsvec_random_c(c_odb,c_self,distrb,relvar) bind(c,name='qg_obsvec_random_f90')
 
 implicit none
 
 ! Passed variables
 type(c_ptr),intent(in) :: c_odb     !< Observation data base
 integer(c_int),intent(in) :: c_self !< Observation vector
+integer :: distrb
+double precision :: relvar
 
 ! Local variables
 type(qg_obsvec),pointer :: self
@@ -368,7 +370,7 @@ type(qg_obsvec),pointer :: self
 call qg_obsvec_registry%get(c_self,self)
 
 ! Call Fortran
-call qg_obsvec_random(c_odb,self)
+call qg_obsvec_random(c_odb,self,distrb,relvar)
 
 end subroutine qg_obsvec_random_c
 ! ------------------------------------------------------------------------------

@@ -35,6 +35,7 @@ observations:
   reference global nobs: 800
 - obs error:
     covariance model: diagonal
+    relative variance: 0.25
   obs space:
     obsdatain:
       obsfile: Data/truth.obs4d_24h.nc

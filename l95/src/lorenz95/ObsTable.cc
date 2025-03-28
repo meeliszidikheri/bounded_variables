@@ -225,9 +225,23 @@ void ObsTable::generateDistribution(const eckit::Configuration & config) {
 
 // -----------------------------------------------------------------------------
 
-void ObsTable::random(std::vector<double> & data) const {
+void ObsTable::random(std::vector<double> & data, const std::string & distrbType,
+                      const double & relvar) const {
+  // For inverse-gamma relative variance (relvar) needs to be specified through
+  // "relative variance" keyword in YAML
+  oops::Log::info() << "relvar in random call: " << relvar << std::endl;
+  if (distrbType == "InvGamma") {
+  util::InverseGammaDistribution<double> x(data.size(), 1.0, relvar, getSeed());
+  for (size_t jj = 0; jj < data.size(); ++jj) data[jj] = x[jj];
+  }  else {
   util::NormalDistribution<double> x(data.size(), 0.0, 1.0, getSeed());
   for (size_t jj = 0; jj < data.size(); ++jj) data[jj] = x[jj];
+  }
+  oops::Log::info() << "distrbType: " << distrbType << std::endl;
+  oops::Log::info() << "obs data: " << std::endl;
+  for (size_t jj = 0; jj < data.size(); ++jj) {
+    oops::Log::info() << data[jj] << std::endl;
+  }
 }
 
 // -----------------------------------------------------------------------------

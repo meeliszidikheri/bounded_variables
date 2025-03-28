@@ -62,6 +62,7 @@ oops/assimilation/LBMinimizer.h
 oops/assimilation/LETKFSolver.h
 oops/assimilation/LETKFSolverGSI.h
 oops/assimilation/LETKFSolverPert.h
+oops/assimilation/LETKFSolverPertGaussian.h
 oops/assimilation/LocalEnsembleSolverParameters.h
 oops/assimilation/LocalEnsembleSolver.h
 oops/assimilation/Minimizer.h
@@ -257,6 +258,8 @@ oops/generic/ModelBase.h
 oops/generic/NormScalar.h
 oops/generic/ObsErrorDiag.h
 oops/generic/ObsErrorDiag.cc
+oops/generic/ObsErrorDiagInvGamma.h
+oops/generic/ObsErrorDiagInvGamma.cc
 oops/generic/ObsErrorBase.h
 oops/generic/PseudoLinearModelIncrement4D.h
 oops/generic/PseudoModel.h

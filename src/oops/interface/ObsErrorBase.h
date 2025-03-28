@@ -53,8 +53,8 @@ class ObsErrorBase : public oops::ObsErrorBase<OBS> {
     this->inverseMultiply(dy.obsvector());
   }
 
-  void randomize(oops::ObsVector<OBS> &dy) const final {
-    this->randomize(dy.obsvector());
+  void randomize(oops::ObsVector<OBS> &dy, oops::ObsVector<OBS> & yobs) const final {
+    this->randomize(dy.obsvector(), yobs.obsvector());
   }
 
   oops::ObsVector<OBS> obserrors() const final {
@@ -80,7 +80,7 @@ class ObsErrorBase : public oops::ObsErrorBase<OBS> {
   virtual void inverseMultiply(ObsVector_ &dy) const = 0;
 
   /// Generate a random perturbation in \p dy.
-  virtual void randomize(ObsVector_ &dy) const = 0;
+  virtual void randomize(ObsVector_ &dy, ObsVector_ &yobs) const = 0;
 
   /// Return a copy of obs error std. dev. If this ObsVector_ is modified (e.g. by obs filters),
   /// it should be passed back to update() to ensure the covariance matrix stays consistent.

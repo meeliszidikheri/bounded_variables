@@ -22,6 +22,7 @@
 #include "oops/base/ObsSpaces.h"
 #include "oops/util/ConfigFunctions.h"  // for vectoriseAndFilter
 #include "oops/util/Printable.h"
+#include "oops/base/ObsVector.h"
 
 namespace oops {
 
@@ -34,6 +35,7 @@ class ObsErrors : public util::Printable,
   typedef ObsError<OBS>                  ObsError_;
   typedef ObsErrorParametersWrapper<OBS> Parameters_;
   typedef ObsSpaces<OBS>                 ObsSpaces_;
+  typedef ObsVector<OBS>                 ObsVector_;
 
  public:
   static const std::string classname() {return "oops::ObsErrors";}
@@ -52,7 +54,7 @@ class ObsErrors : public util::Printable,
   void inverseMultiply(Departures_ &) const;
 
 /// Generate random perturbation
-  void randomize(Departures_ &) const;
+  void randomize(Departures_ &, std::vector<ObsVector_> &) const;
 
 /// Save obs errors
   void save(const std::string &) const;
@@ -85,6 +87,7 @@ ObsErrors<OBS>::ObsErrors(const std::vector<Parameters_> & params,
 
 template <typename OBS>
 ObsErrors<OBS>::ObsErrors(const eckit::Configuration & config, const ObsSpaces_ & os)
+//  : err_(), os_(os), obstemp()
   : err_(), os_(os)
 {
   std::vector<eckit::LocalConfiguration> subconfigs = config.getSubConfigurations();
@@ -120,9 +123,9 @@ void ObsErrors<OBS>::inverseMultiply(Departures_ & dy) const {
 // -----------------------------------------------------------------------------
 
 template <typename OBS>
-void ObsErrors<OBS>::randomize(Departures_ & dy) const {
+void ObsErrors<OBS>::randomize(Departures_ & dy, std::vector<ObsVector_> & yobs) const {
   for (size_t jj = 0; jj < err_.size(); ++jj) {
-    err_[jj].randomize(dy[jj]);
+    err_[jj].randomize(dy[jj], yobs[jj]);
   }
 }
 

@@ -59,7 +59,7 @@ class ObsVec1D : public util::Printable,
 
   void axpy(const double &, const ObsVec1D &);
   void invert();
-  void random();
+  void random(const std::string &, const double &);
   double dot_product_with(const ObsVec1D &) const;
   double rms() const;
   void mask(const ObsVec1D &);

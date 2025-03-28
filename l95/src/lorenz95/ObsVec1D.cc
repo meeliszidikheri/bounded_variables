@@ -126,8 +126,8 @@ void ObsVec1D::axpy(const double & zz, const ObsVec1D & rhs) {
   }
 }
 // -----------------------------------------------------------------------------
-void ObsVec1D::random() {
-  obsdb_.random(data_);
+void ObsVec1D::random(const std::string & distrbType, const double & relvar) {
+  obsdb_.random(data_, distrbType, relvar);
 }
 // -----------------------------------------------------------------------------
 double ObsVec1D::dot_product_with(const ObsVec1D & other) const {

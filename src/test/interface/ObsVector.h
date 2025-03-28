@@ -53,7 +53,7 @@ template <typename OBS> void testCopyConstructor() {
   for (std::size_t jj = 0; jj < Test_::obspace().size(); ++jj) {
     std::unique_ptr<ObsVector_> ov(new ObsVector_(Test_::obspace()[jj]));
 
-    ov->random();
+    ov->random("Normal", 1.0);
     oops::Log::info() << "Printing random ObsVector: " << *ov << std::endl;
 
     std::unique_ptr<ObsVector_> other(new ObsVector_(*ov));
@@ -81,7 +81,7 @@ template <typename OBS> void testWrappingConstructor() {
   for (std::size_t jj = 0; jj < Test_::obspace().size(); ++jj) {
     ObsVector_ ov(Test_::obspace()[jj]);
 
-    ov.random();
+    ov.random("Normal", 1.0);
     oops::Log::info() << "Printing random ObsVector: " << ov << std::endl;
 
     ObsVector_ other(std::make_unique<typename OBS::ObsVector_>(ov->obsvector()),
@@ -107,7 +107,7 @@ template <typename OBS> void testNotZero() {
 
   for (std::size_t jj = 0; jj < Test_::obspace().size(); ++jj) {
     ObsVector_ ov1(Test_::obspace()[jj]);
-    ov1.random();
+    ov1.random("Normal", 1.0);
 
     const double zz = dot_product(ov1, ov1);
     EXPECT(zz > zero);
@@ -132,7 +132,7 @@ template <typename OBS> void testLinearAlgebra() {
   const double tolerance = 1.0e-8;
   for (std::size_t jj = 0; jj < Test_::obspace().size(); ++jj) {
     ObsVector_ ov1(Test_::obspace()[jj]);
-    ov1.random();
+    ov1.random("Normal", 1.0);
 
     // test *=, += and -=
     ObsVector_ ov2(ov1);
@@ -177,7 +177,7 @@ template <typename OBS> void testReadWrite() {
   const double tolerance = 1.0e-8;
   for (std::size_t jj = 0; jj < Test_::obspace().size(); ++jj) {
     ObsVector_ ov1(Test_::obspace()[jj]);
-    ov1.random();
+    ov1.random("Normal", 1.0);
 
     ov1.save("test");
     ObsVector_ ov2(Test_::obspace()[jj], "test");
@@ -205,7 +205,7 @@ template <typename OBS> void testMask() {
     const ObsSpace_ & obspace = Test_::obspace()[jj];
 
     ObsVector_ reference(obspace);
-    reference.random();
+    reference.random("Normal", 1.0);
     oops::Log::info() << "ObsVector before masking: " << reference << std::endl;
 
     const size_t nobs_all = Test_::config(jj).getInt("reference global nobs");
@@ -272,11 +272,11 @@ template <typename OBS> void testMask() {
     EXPECT_EQUAL(test.nobs(), nobs_after_mask);
 
     /// Test +=(ObsVector)
-    test.random();
+    test.random("Normal", 1.0);
     EXPECT_EQUAL(test.nobs(), nobs_all);
     test += with_mask;
     EXPECT_EQUAL(test.nobs(), nobs_after_mask);
-    test.random();
+    test.random("Normal", 1.0);
     EXPECT_EQUAL(test.nobs(), nobs_all);
     with_mask += test;
     EXPECT_EQUAL(with_mask.nobs(), nobs_after_mask);
@@ -285,7 +285,7 @@ template <typename OBS> void testMask() {
     EXPECT_EQUAL(test.nobs(), nobs_all);
     test -= with_mask;
     EXPECT_EQUAL(test.nobs(), nobs_after_mask);
-    test.random();
+    test.random("Normal", 1.0);
     EXPECT_EQUAL(test.nobs(), nobs_all);
     with_mask -= test;
     EXPECT_EQUAL(with_mask.nobs(), nobs_after_mask);
@@ -294,7 +294,7 @@ template <typename OBS> void testMask() {
     EXPECT_EQUAL(test.nobs(), nobs_all);
     test *= with_mask;
     EXPECT_EQUAL(test.nobs(), nobs_after_mask);
-    test.random();
+    test.random("Normal", 1.0);
     EXPECT_EQUAL(test.nobs(), nobs_all);
     with_mask *= test;
     EXPECT_EQUAL(with_mask.nobs(), nobs_after_mask);
@@ -303,7 +303,7 @@ template <typename OBS> void testMask() {
     EXPECT_EQUAL(test.nobs(), nobs_all);
     test /= with_mask;
     EXPECT_EQUAL(test.nobs(), nobs_after_mask);
-    test.random();
+    test.random("Normal", 1.0);
     EXPECT_EQUAL(test.nobs(), nobs_all);
     with_mask /= test;
     EXPECT_EQUAL(with_mask.nobs(), nobs_after_mask);
@@ -312,7 +312,7 @@ template <typename OBS> void testMask() {
     EXPECT_EQUAL(test.nobs(), nobs_all);
     test.axpy(2.0, with_mask);
     EXPECT_EQUAL(test.nobs(), nobs_after_mask);
-    test.random();
+    test.random("Normal", 1.0);
     EXPECT_EQUAL(test.nobs(), nobs_all);
     with_mask.axpy(2.0, test);
     EXPECT_EQUAL(with_mask.nobs(), nobs_after_mask);
@@ -323,7 +323,7 @@ template <typename OBS> void testMask() {
     maskvec.ones();
     maskvec.mask(mask);
     // randomize the vector, and call maskAndSerialize with maskvec
-    test.random();
+    test.random("Normal", 1.0);
     std::vector<double> with_mask_vec;
     test.maskAndSerialize(maskvec, with_mask_vec);
     oops::Log::debug() << "Local number of masked observations is: " <<
